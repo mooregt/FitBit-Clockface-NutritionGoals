@@ -1,1 +1,2 @@
-# FitBit-Clockface-NutritionGoals
+# Observanutrition
+A fitbit clockface for displaying nutiritional information.
