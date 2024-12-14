@@ -9,7 +9,7 @@
   },
   "fitbit": {
     "appUUID": "05c3a6ba-9ddd-4a2b-b826-c009af40a310",
-    "appType": "app",
+    "appType": "clockface",
     "appDisplayName": "My First Clock",
     "iconFile": "resources/icon.png",
     "wipeColor": "#ffffff",

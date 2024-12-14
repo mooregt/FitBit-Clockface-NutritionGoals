@@ -6,7 +6,8 @@ let myImage = document.getElementById("myImage");
 // Message is received from companion
 messaging.peerSocket.onmessage = evt => {
   // Am I Tired?
-  if (evt.data.totalMinutesAsleep >= 300) {
+  console.log(evt.data.calories);
+  if (evt.data.calories >= 300) {
     // Had at least 5 hours sleep
     myImage.href = "images/awake.jpg";
   } else {

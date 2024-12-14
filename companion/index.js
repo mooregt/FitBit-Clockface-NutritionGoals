@@ -7,7 +7,7 @@ function fetchSleepData(accessToken)  {
   let todayDate = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`; //YYYY-MM-DD
 
   // Sleep API docs - https://dev.fitbit.com/reference/web-api/sleep/
-  fetch(`https://api.fitbit.com/1.2/user/-/sleep/date/${todayDate}.json`, {
+  fetch(`https://api.fitbit.com/1/user/-/foods/log/date/${todayDate}.json`, {
     method: "GET",
     headers: {
       "Authorization": `Bearer ${accessToken}`
@@ -18,7 +18,7 @@ function fetchSleepData(accessToken)  {
   })
   .then(function(data) {
     let myData = {
-      totalMinutesAsleep: data.summary.totalMinutesAsleep
+      calories: data.summary.calories
     }
     if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
       messaging.peerSocket.send(myData);
