@@ -1,13 +1,23 @@
 import * as messaging from "messaging";
 import { settingsStorage } from "settings";
 
-// Fetch Sleep Data from Fitbit Web API
-function fetchSleepData(accessToken)  {
-  let date = new Date();
-  let todayDate = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`; //YYYY-MM-DD
+let updateInterval = null;
+const UPDATE_FREQUENCY_MS = 3600000; // Fetch data every minute (adjust as needed)
 
-  // Sleep API docs - https://dev.fitbit.com/reference/web-api/sleep/
-  fetch(`https://api.fitbit.com/1/user/-/foods/log/date/${todayDate}.json`, {
+function GetUrlsForDate(date)
+{
+  let formattedDate = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`; //YYYY-MM-DD
+
+  return {
+    FitbitFoodsLogDate: `https://api.fitbit.com/1/user/-/foods/log/date/${formattedDate}.json`
+  }
+}
+
+function FetchCaloriesConsumed(accessToken)  {
+  let date = new Date();
+  let urls = GetUrlsForDate(date);
+
+  fetch(urls.FitbitFoodsLogDate, {
     method: "GET",
     headers: {
       "Authorization": `Bearer ${accessToken}`
@@ -27,29 +37,35 @@ function fetchSleepData(accessToken)  {
   .catch(err => console.log('[FETCH]: ' + err));
 }
 
-// A user changes Settings
-settingsStorage.onchange = evt => {
-  console.log("Hello");
-  if (evt.key === "oauth") {
-    // Settings page sent us an oAuth token
-    let data = JSON.parse(evt.newValue);
-    fetchSleepData(data.access_token) ;
+function StartPeriodicUpdates() {
+  if (!updateInterval) {
+    updateInterval = setInterval(() => FetchCaloriesConsumed(accessToken), UPDATE_FREQUENCY_MS);
+    console.log(`[INFO]: Started periodic updates every ${UPDATE_FREQUENCY_MS / 1000} seconds.`);
   }
-};
+}
 
-// Restore previously saved settings and send to the device
-function restoreSettings() {
+function RestoreSettings() {
   for (let index = 0; index < settingsStorage.length; index++) {
     let key = settingsStorage.key(index);
     if (key && key === "oauth") {
-      // We already have an oauth token
       let data = JSON.parse(settingsStorage.getItem(key))
-      fetchSleepData(data.access_token);
+      Main(data.access_token);
     }
   }
 }
 
-// Message socket opens
-messaging.peerSocket.onopen = () => {
-  restoreSettings();
+settingsStorage.onchange = evt => {
+  if (evt.key === "oauth") {
+    let data = JSON.parse(evt.newValue);
+    Main(data.access_token);
+  }
 };
+
+messaging.peerSocket.onopen = () => {
+  RestoreSettings();
+};
+
+function Main(accessToken) {
+  FetchCaloriesConsumed(accessToken);
+  StartPeriodicUpdates();
+}

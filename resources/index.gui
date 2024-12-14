@@ -1,4 +1,7 @@
 <svg class="background">
-  <image id="myImage" href="images/waiting.jpg" />
-  <text id="calorieLabel" x="50%" y="60%" text-anchor="middle" font-size="16" text-length="20"/>
+  <text id="dateLabel" text-length="32"/>
+  <text id="timeLabel" text-length="32"/>
+  <text id="calorieLabel" text-length="32"/>
+  <text id="stepsLabel" text-length="32"/>
+  <text id="heartRateLabel" text-length="32"/>
 </svg>

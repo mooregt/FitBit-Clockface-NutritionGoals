@@ -16,7 +16,8 @@
     "requestedPermissions": [
       "access_activity",
       "access_internet",
-      "run_background"
+      "run_background",
+      "access_heart_rate"
     ],
     "buildTargets": [
       "mira"
