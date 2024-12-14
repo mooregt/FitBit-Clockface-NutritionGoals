@@ -13,12 +13,16 @@ function ZeroPad(i) {
 }
 
 clock.granularity = "minutes";
-var calories = 0;
+var caloriesConsumed = 0;
+var waterConsumed = 0;
+var waterGoal = 0;
+var caloriesConsumed = 0;
 const hrm = new HeartRateSensor();
 
 const dateLabel = document.getElementById("dateLabel");
 const timeLabel = document.getElementById("timeLabel");
 const calorieLabel = document.getElementById("calorieLabel");
+const waterLabel = document.getElementById("waterLabel");
 const stepsLabel = document.getElementById("stepsLabel");
 const heartRateLabel = document.getElementById("heartRateLabel");
 
@@ -37,7 +41,8 @@ clock.ontick = (evt) => {
 
   dateLabel.text = `${todayDate.getDate()}/${todayDate.getMonth()}/${todayDate.getFullYear()}`;
   timeLabel.text = `${hours}:${mins}`;
-  calorieLabel.text = `${calories} / ${caloriesBurned} CALS`;
+  calorieLabel.text = `${caloriesConsumed} / ${caloriesBurned} CALS`;
+  waterLabel.text = `${waterConsumed} / ${waterGoal} ML`;
   stepsLabel.text = `${steps} STEPS`;
 }
 
@@ -46,8 +51,20 @@ hrm.onreading = () => {
 };
 
 messaging.peerSocket.onmessage = evt => {
-  console.log(evt.data.calories);
-  calories = evt.data.calories;
+  if (evt.data.caloriesConsumed !== undefined) {
+    console.log(`Calories consumed: ${evt.data.caloriesConsumed}`);
+    caloriesConsumed = evt.data.caloriesConsumed;
+  }
+
+  if (evt.data.waterConsumed !== undefined) {
+    console.log(`Water consumed: ${evt.data.waterConsumed}`);
+    waterConsumed = evt.data.waterConsumed;
+  }
+  
+  if (evt.data.waterGoal !== undefined) {
+    console.log(`Water consumed: ${evt.data.waterGoal}`);
+    waterGoal = evt.data.waterGoal;
+  }
 };
 
 hrm.start();

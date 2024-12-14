@@ -2,6 +2,7 @@
   <text id="dateLabel" text-length="32"/>
   <text id="timeLabel" text-length="32"/>
   <text id="calorieLabel" text-length="32"/>
+  <text id="waterLabel" text-length="32"/>
   <text id="stepsLabel" text-length="32"/>
   <text id="heartRateLabel" text-length="32"/>
 </svg>

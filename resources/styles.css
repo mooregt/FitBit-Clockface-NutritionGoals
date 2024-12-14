@@ -25,7 +25,7 @@
   fill: white;
 }
 
-#stepsLabel {
+#waterLabel {
   font-size: 24;
   font-family: System-Bold;
   text-anchor: middle;
@@ -34,11 +34,20 @@
   fill: white;
 }
 
-#heartRateLabel {
+#stepsLabel {
   font-size: 24;
   font-family: System-Bold;
   text-anchor: middle;
   x: 50%;
   y: 50%+75;
+  fill: white;
+}
+
+#heartRateLabel {
+  font-size: 24;
+  font-family: System-Bold;
+  text-anchor: middle;
+  x: 50%;
+  y: 50%+100;
   fill: white;
 }

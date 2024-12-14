@@ -9,7 +9,9 @@ function GetUrlsForDate(date)
   let formattedDate = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`; //YYYY-MM-DD
 
   return {
-    FitbitFoodsLogDate: `https://api.fitbit.com/1/user/-/foods/log/date/${formattedDate}.json`
+    FitbitFoodsLogDate: `https://api.fitbit.com/1/user/-/foods/log/date/${formattedDate}.json`,
+    FitbitFoodsLogWaterDate: `https://api.fitbit.com/1/user/-/foods/log/water/date/${formattedDate}.json`,
+    FitbitFoodsLogWaterGoal: `https://api.fitbit.com/1/user/-/foods/log/water/goal.json`
   }
 }
 
@@ -28,7 +30,55 @@ function FetchCaloriesConsumed(accessToken)  {
   })
   .then(function(data) {
     let myData = {
-      calories: data.summary.calories
+      caloriesConsumed: data.summary.calories
+    }
+    if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
+      messaging.peerSocket.send(myData);
+    }
+  })
+  .catch(err => console.log('[FETCH]: ' + err));
+}
+
+function FetchWaterConsumed(accessToken)  {
+  let date = new Date();
+  let urls = GetUrlsForDate(date);
+
+  fetch(urls.FitbitFoodsLogWaterDate, {
+    method: "GET",
+    headers: {
+      "Authorization": `Bearer ${accessToken}`
+    }
+  })
+  .then(function(res) {
+    return res.json();
+  })
+  .then(function(data) {
+    let myData = {
+      waterConsumed: data.summary.water
+    }
+    if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
+      messaging.peerSocket.send(myData);
+    }
+  })
+  .catch(err => console.log('[FETCH]: ' + err));
+}
+
+function FetchWaterGoal(accessToken)  {
+  let date = new Date();
+  let urls = GetUrlsForDate(date);
+
+  fetch(urls.FitbitFoodsLogWaterGoal, {
+    method: "GET",
+    headers: {
+      "Authorization": `Bearer ${accessToken}`
+    }
+  })
+  .then(function(res) {
+    return res.json();
+  })
+  .then(function(data) {
+    let myData = {
+      waterGoal: data.goal.goal
     }
     if (messaging.peerSocket.readyState === messaging.peerSocket.OPEN) {
       messaging.peerSocket.send(myData);
@@ -39,7 +89,11 @@ function FetchCaloriesConsumed(accessToken)  {
 
 function StartPeriodicUpdates() {
   if (!updateInterval) {
-    updateInterval = setInterval(() => FetchCaloriesConsumed(accessToken), UPDATE_FREQUENCY_MS);
+    updateInterval = setInterval(() => {
+      FetchCaloriesConsumed(accessToken);
+      FetchWaterConsumed(accessToken);
+      FetchWaterGoal(accessToken);
+    }, UPDATE_FREQUENCY_MS);
     console.log(`[INFO]: Started periodic updates every ${UPDATE_FREQUENCY_MS / 1000} seconds.`);
   }
 }
@@ -67,5 +121,7 @@ messaging.peerSocket.onopen = () => {
 
 function Main(accessToken) {
   FetchCaloriesConsumed(accessToken);
+  FetchWaterConsumed(accessToken);
+  FetchWaterGoal(accessToken);
   StartPeriodicUpdates();
 }
