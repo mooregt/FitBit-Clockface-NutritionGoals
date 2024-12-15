@@ -1,8 +1,9 @@
 import * as messaging from "messaging";
 import { settingsStorage } from "settings";
+import { me as companion } from "companion";
 
 let updateInterval = null;
-const UPDATE_FREQUENCY_MS = 3600000; // Fetch data every minute (adjust as needed)
+const MILLISECONDS_PER_MINUTE = 1000 * 60;
 
 function GetUrlsForDate(date)
 {
@@ -87,17 +88,6 @@ function FetchWaterGoal(accessToken)  {
   .catch(err => console.log('[FETCH]: ' + err));
 }
 
-function StartPeriodicUpdates() {
-  if (!updateInterval) {
-    updateInterval = setInterval(() => {
-      FetchCaloriesConsumed(accessToken);
-      FetchWaterConsumed(accessToken);
-      FetchWaterGoal(accessToken);
-    }, UPDATE_FREQUENCY_MS);
-    console.log(`[INFO]: Started periodic updates every ${UPDATE_FREQUENCY_MS / 1000} seconds.`);
-  }
-}
-
 function RestoreSettings() {
   for (let index = 0; index < settingsStorage.length; index++) {
     let key = settingsStorage.key(index);
@@ -120,8 +110,18 @@ messaging.peerSocket.onopen = () => {
 };
 
 function Main(accessToken) {
+  console.log('[INFO]: Running data update with access token: ' + accessToken)
   FetchCaloriesConsumed(accessToken);
   FetchWaterConsumed(accessToken);
   FetchWaterGoal(accessToken);
-  StartPeriodicUpdates();
+}
+
+function doSync() {
+  let accessToken = JSON.parse(settingsStorage.getItem("oauth")).access_token;
+  Main(accessToken);
+}
+
+if (companion.launchReasons.wokenUp){
+  console.log('[INFO]: Companion woke up.')
+  doSync();
 }
