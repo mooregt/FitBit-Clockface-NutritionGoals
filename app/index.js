@@ -39,7 +39,7 @@ clock.ontick = (evt) => {
   const caloriesBurned = today.adjusted.calories || 0;
   const steps = today.adjusted.steps || 0;
 
-  dateLabel.text = `${todayDate.getDate()}/${todayDate.getMonth()}/${todayDate.getFullYear()}`;
+  dateLabel.text = `${todayDate.getDate()}/${todayDate.getMonth()+1}/${todayDate.getFullYear()}`;
   timeLabel.text = `${hours}:${mins}`;
   calorieLabel.text = `${caloriesConsumed} / ${caloriesBurned} CALS`;
   waterLabel.text = `${waterConsumed} / ${waterGoal} ML`;
